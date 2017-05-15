@@ -7,10 +7,16 @@ import java.util.*;
  */
 
 public class UserRV {
-    private String nome;
+
+
+    private String email;
     private double latitude;
     private double longitude;
     private List<UserRV> amigos = new ArrayList<UserRV>();
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
 
     public double getLatitude() {
         return latitude;

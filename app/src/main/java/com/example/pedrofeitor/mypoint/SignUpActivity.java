@@ -20,6 +20,7 @@ public class SignUpActivity extends AppCompatActivity {
     protected EditText emailEditText;
     protected Button signUpButton;
     private FirebaseAuth mFirebaseAuth;
+    UserRV user = new UserRV();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -42,6 +43,7 @@ public class SignUpActivity extends AppCompatActivity {
                 password = password.trim();
                 email = email.trim();
 
+
                 if (password.isEmpty() || email.isEmpty()) {
                     AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
                     builder.setMessage(R.string.signup_error_message)
@@ -50,6 +52,7 @@ public class SignUpActivity extends AppCompatActivity {
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 } else {
+                    final String finalEmail = email;
                     mFirebaseAuth.createUserWithEmailAndPassword(email, password)
                             .addOnCompleteListener(SignUpActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
@@ -58,6 +61,7 @@ public class SignUpActivity extends AppCompatActivity {
                                         Intent intent = new Intent(SignUpActivity.this, MapsActivity.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                        user.setEmail(finalEmail);
                                         startActivity(intent);
                                     } else {
                                         AlertDialog.Builder builder = new AlertDialog.Builder(SignUpActivity.this);
