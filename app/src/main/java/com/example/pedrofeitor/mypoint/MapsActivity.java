@@ -27,6 +27,7 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
@@ -39,8 +40,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Location mLastLocation;
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
+    private DatabaseReference mDatabase;
 
-    Firebase ref = new Firebase("https://console.firebase.google.com/project/mypoint-f1a4c/");
+    //Firebase ref = new Firebase("https://console.firebase.google.com/project/mypoint-f1a4c/");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -53,6 +55,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
+        mDatabase = FirebaseDatabase.getInstance().getReference();
     }
 
 
@@ -128,7 +131,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         user.setLatitude(location.getLatitude());
         user.setLongitude(location.getLongitude());
 
-        ref.child("user").setValue(user);
+        mDatabase.child("users").setValue(user);
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
