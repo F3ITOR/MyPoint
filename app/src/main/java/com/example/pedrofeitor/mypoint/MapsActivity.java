@@ -42,7 +42,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationRequest mLocationRequest;
     private DatabaseReference mDatabase;
 
-    //Firebase ref = new Firebase("https://console.firebase.google.com/project/mypoint-f1a4c/");
+    Firebase ref = new Firebase("https://mypoint-f1a4c.firebaseio.com");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -131,7 +131,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         user.setLatitude(location.getLatitude());
         user.setLongitude(location.getLongitude());
 
-        mDatabase.child("users").setValue(user);
+        ref.child("users").setValue(user);
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
