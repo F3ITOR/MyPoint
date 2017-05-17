@@ -45,6 +45,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     UserRV user = new UserRV();
     private FirebaseAuth mFirebaseAuth;
 
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -62,7 +63,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         user.setEmail(mFirebaseAuth.getCurrentUser().getEmail());
         user.setLatitude(12);
         user.setLongitude(0);
-        ref.child("asdf").setValue(user);
+        ref.child("users").setValue(user);
     }
 
 
