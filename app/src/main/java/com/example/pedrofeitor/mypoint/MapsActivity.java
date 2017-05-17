@@ -40,14 +40,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Location mLastLocation;
     Marker mCurrLocationMarker;
     LocationRequest mLocationRequest;
-    private DatabaseReference mDatabase;
+    final FirebaseDatabase database = FirebaseDatabase.getInstance();
+    DatabaseReference ref = database.getReference();
+    UserRV user = new UserRV();
+    private FirebaseAuth mFirebaseAuth;
 
-    //Firebase ref = new Firebase("https://console.firebase.google.com/project/mypoint-f1a4c/");
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
-
+        mFirebaseAuth = FirebaseAuth.getInstance();
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
@@ -55,7 +57,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
-        mDatabase = FirebaseDatabase.getInstance().getReference();
+        Firebase.setAndroidContext(this);
+        //mFirebaseAuth.getCurrentUser().getEmail().toString()
+        user.setEmail(mFirebaseAuth.getCurrentUser().getEmail());
+        user.setLatitude(12);
+        user.setLongitude(0);
+        ref.child("asdf").setValue(user);
     }
 
 
@@ -113,7 +120,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
-        UserRV user = new UserRV();
+
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
@@ -131,7 +138,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         user.setLatitude(location.getLatitude());
         user.setLongitude(location.getLongitude());
 
-        mDatabase.child("users").setValue(user);
+
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18));

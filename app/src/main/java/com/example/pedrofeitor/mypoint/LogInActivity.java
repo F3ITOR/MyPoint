@@ -23,7 +23,7 @@ public class LogInActivity extends AppCompatActivity {
     protected Button logInButton;
     protected TextView signUpTextView;
     private FirebaseAuth mFirebaseAuth;
-    UserRV user = new UserRV();
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -63,13 +63,11 @@ public class LogInActivity extends AppCompatActivity {
                     AlertDialog dialog = builder.create();
                     dialog.show();
                 } else {
-                    final String finalEmail = email;
                     mFirebaseAuth.signInWithEmailAndPassword(email, password)
                             .addOnCompleteListener(LogInActivity.this, new OnCompleteListener<AuthResult>() {
                                 @Override
                                 public void onComplete(@NonNull Task<AuthResult> task) {
                                     if (task.isSuccessful()) {
-                                        user.setEmail(finalEmail);
                                         Intent intent = new Intent(LogInActivity.this, MapsActivity.class);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                                         intent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TASK);

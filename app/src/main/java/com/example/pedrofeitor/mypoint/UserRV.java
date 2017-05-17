@@ -9,10 +9,11 @@ import java.util.*;
 public class UserRV {
 
 
-    private String email;
-    private double latitude;
-    private double longitude;
-    private List<UserRV> amigos = new ArrayList<UserRV>();
+    public String email;
+    public double latitude;
+    public double longitude;
+    public List<UserRV> amigos = new ArrayList<UserRV>();
+    public UserRV(){}
 
     public void setEmail(String email) {
         this.email = email;
