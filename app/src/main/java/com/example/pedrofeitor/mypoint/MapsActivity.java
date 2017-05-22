@@ -60,10 +60,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         Firebase.setAndroidContext(this);
         //mFirebaseAuth.getCurrentUser().getEmail().toString()
-        user.setEmail(mFirebaseAuth.getCurrentUser().getEmail());
-        user.setLatitude(12);
-        user.setLongitude(0);
-        ref.child("users").setValue(user);
+
     }
 
 
