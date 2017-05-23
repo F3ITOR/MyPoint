@@ -5,7 +5,9 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -83,6 +85,17 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
         buttom.setVisibility(View.VISIBLE);
     }
 
+    public void search(View view){
+        Intent i = new Intent(this,MapsActivity.class);
+
+        final SearchView busnumber = (SearchView) findViewById(R.id.search);
+
+        String busnumberinput = busnumber.getQuery().toString();
+
+        i.putExtra("busnumber", busnumberinput);
+        Log.i("Bus number", busnumberinput);
+        startActivity(i);
+    }
     public void confirm(View view){
 
         String bus = busText.getText().toString();
