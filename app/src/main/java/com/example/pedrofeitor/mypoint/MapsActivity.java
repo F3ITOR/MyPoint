@@ -51,7 +51,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private boolean firstTime=true;
     private MarkerOptions options;
     private Marker m;
-
+    String buspass;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,14 +63,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
 
         Bundle busnumber = getIntent().getExtras();
-        String buspass = busnumber.getString("busnumber");
+        buspass = busnumber.getString("busnumber");
 
         //Name.setText(userpass);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         Firebase.setAndroidContext(this);
-        options = new MarkerOptions().position(new LatLng(38.751239,-9.60948)).title("BUS");
+        options = new MarkerOptions().position(new LatLng(38.751239,-9.60948)).title("BUS "+buspass);
 
     }
 
@@ -97,8 +97,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
         }
         m=mMap.addMarker(options);
-        Log.i("autocarro","depois addmarker");
-        DatabaseReference busses=ref.child("bus/112/coordenadas");
+        Log.i("autocarro nº",buspass);
+        DatabaseReference busses=ref.child("bus").child(buspass).child("coordenadas");
         busses.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
