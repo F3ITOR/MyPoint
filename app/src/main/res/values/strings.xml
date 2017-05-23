@@ -8,6 +8,7 @@
     <string name="signup_error_title">Error!</string>
     <string name="signup_success">Account successfully created! You can now Login.</string>
     <string name="login_error_message">Please make sure you enter an email address,username and password!</string>
+    <string name="bus_error_message">Please make sure you enter a bus number!</string>
     <string name="login_error_title">Error!</string>
     <string name="login_button_label">Login</string>
     <string name="sign_up_text">Sign Up!</string>
