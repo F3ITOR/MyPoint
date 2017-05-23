@@ -46,6 +46,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationRequest mLocationRequest;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
+
     private FirebaseAuth mFirebaseAuth;
     private boolean firstTime=true;
     private MarkerOptions options;
@@ -60,16 +61,16 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
             checkLocationPermission();
         }
-        // Obtain the SupportMapFragment and get notified when the map is ready to be used.
+
+        Bundle busnumber = getIntent().getExtras();
+        String buspass = busnumber.getString("busnumber");
+
+        //Name.setText(userpass);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
         mapFragment.getMapAsync(this);
         Firebase.setAndroidContext(this);
-        //mFirebaseAuth.getCurrentUser().getEmail().toString()
-        Log.i("autocarro","antes options");
         options = new MarkerOptions().position(new LatLng(38.751239,-9.60948)).title("BUS");
-        Log.i("autocarro","depois options");
-
 
     }
 
@@ -105,10 +106,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.i("autocarro latitude", String.valueOf(location.latitude));
                 Log.i("autocarro longitude", String.valueOf(location.longitude));
                 LatLng bus = new LatLng(location.latitude, location.longitude);
-
-                Log.i("autocarro ","after marker=m ");
                 m.setPosition(bus);
-                Log.i("autocarro ","after m.setPosition ");
+
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(bus));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
             }

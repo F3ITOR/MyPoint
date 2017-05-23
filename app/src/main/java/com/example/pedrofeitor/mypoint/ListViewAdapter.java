@@ -20,12 +20,12 @@ public class ListViewAdapter extends BaseAdapter {
     private List<BusNumber> busnumberList = null;
     private ArrayList<BusNumber> arraylist;
 
-    public ListViewAdapter(Context context, List<BusNumber> animalNamesList) {
+    public ListViewAdapter(Context context, List<BusNumber> busnumberList) {
         mContext = context;
-        this.busnumberList = animalNamesList;
+        this.busnumberList = busnumberList;
         inflater = LayoutInflater.from(mContext);
         this.arraylist = new ArrayList<BusNumber>();
-        this.arraylist.addAll(animalNamesList);
+        this.arraylist.addAll(busnumberList);
     }
 
     public class ViewHolder {
