@@ -9,6 +9,7 @@ import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
+import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
 
@@ -42,7 +43,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationRequest mLocationRequest;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
-    UserRV user = new UserRV();
     private FirebaseAuth mFirebaseAuth;
 
 
@@ -60,10 +60,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         Firebase.setAndroidContext(this);
         //mFirebaseAuth.getCurrentUser().getEmail().toString()
-        user.setEmail(mFirebaseAuth.getCurrentUser().getEmail());
-        user.setLatitude(12);
-        user.setLongitude(0);
-        ref.child("users").setValue(user);
+        String email=mFirebaseAuth.getCurrentUser().getEmail();
+        Log.i("teste", email);
+        ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("coordenadas").setValue(new Coordenadas(38.7378496,-9.30328824));
     }
 
 
@@ -135,10 +134,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-
-        user.setLatitude(location.getLatitude());
-        user.setLongitude(location.getLongitude());
-
+        ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("coordenadas").setValue(new Coordenadas(location.getLatitude(),location.getLongitude()));
 
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
