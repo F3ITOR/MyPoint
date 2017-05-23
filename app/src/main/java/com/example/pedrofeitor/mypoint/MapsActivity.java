@@ -28,8 +28,11 @@ import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 public class MapsActivity extends FragmentActivity implements OnMapReadyCallback,
         GoogleApiClient.ConnectionCallbacks,
@@ -44,6 +47,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
     private FirebaseAuth mFirebaseAuth;
+    private boolean firstTime=true;
+    private MarkerOptions options;
+    private Marker m;
 
 
     @Override
@@ -60,9 +66,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         mapFragment.getMapAsync(this);
         Firebase.setAndroidContext(this);
         //mFirebaseAuth.getCurrentUser().getEmail().toString()
-        String email=mFirebaseAuth.getCurrentUser().getEmail();
-        Log.i("teste", email);
-        ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("coordenadas").setValue(new Coordenadas(38.7378496,-9.30328824));
+        Log.i("autocarro","antes options");
+        options = new MarkerOptions().position(new LatLng(38.751239,-9.60948)).title("BUS");
+        Log.i("autocarro","depois options");
+
+
     }
 
 
@@ -87,6 +95,28 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             buildGoogleApiClient();
             mMap.setMyLocationEnabled(true);
         }
+        m=mMap.addMarker(options);
+        Log.i("autocarro","depois addmarker");
+        DatabaseReference busses=ref.child("bus/112/coordenadas");
+        busses.addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Coordenadas location=dataSnapshot.getValue(Coordenadas.class);
+                Log.i("autocarro latitude", String.valueOf(location.latitude));
+                Log.i("autocarro longitude", String.valueOf(location.longitude));
+                LatLng bus = new LatLng(location.latitude, location.longitude);
+
+                Log.i("autocarro ","after marker=m ");
+                m.setPosition(bus);
+                Log.i("autocarro ","after m.setPosition ");
+                mMap.moveCamera(CameraUpdateFactory.newLatLng(bus));
+                mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+            }
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
     }
 
     protected synchronized void buildGoogleApiClient() {
@@ -120,31 +150,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
-
-        mLastLocation = location;
-        if (mCurrLocationMarker != null) {
-            mCurrLocationMarker.remove();
-        }
-        LatLng friend = new LatLng(38.7378496, -9.30328824);
-
-        MarkerOptions options = new MarkerOptions()
-                .position(friend)
-                .title("RUI");
-        mMap.addMarker(options);
-
-        //Place current location marker
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("coordenadas").setValue(new Coordenadas(location.getLatitude(),location.getLongitude()));
-
-        //move map camera
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
-
-        //stop location updates
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
-
     }
 
 

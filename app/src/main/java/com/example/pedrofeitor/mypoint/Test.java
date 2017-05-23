@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
@@ -13,10 +14,14 @@ import android.widget.SearchView;
 import android.widget.TextView;
 
 import com.google.firebase.auth.FirebaseAuth;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import static com.example.pedrofeitor.mypoint.R.id.listview;
 
@@ -41,7 +46,7 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
         mFirebaseAuth = FirebaseAuth.getInstance();
         // Generate sample data
 
-        busnumberList = new String[]{"112", "113", "114", "115"};
+        busnumberList = new String[]{"112", "113"};
         busText = (EditText) findViewById(R.id.busnumber);
         checkButtom = (Button) findViewById(R.id.loginButton);
 
@@ -95,7 +100,8 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
             AlertDialog dialog = builder.create();
             dialog.show();
         } else{
-            ref.child("users").child(mFirebaseAuth.getCurrentUser().getUid()).child("bus").setValue(bus);
+            //ref.child("users").child(mFirebaseAuth.getCurrentUser().getUid()).child("bus").setValue(bus);
+
             Intent intent = new Intent(Test.this, MapsActivity.class);
             startActivity(intent);
         }

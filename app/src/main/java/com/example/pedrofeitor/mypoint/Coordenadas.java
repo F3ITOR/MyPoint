@@ -1,9 +1,5 @@
 package com.example.pedrofeitor.mypoint;
 
-/**
- * Created by Rui Caneca on 5/22/2017.
- */
-
 public class Coordenadas {
     public double latitude;
     public double longitude;
@@ -13,4 +9,6 @@ public class Coordenadas {
         this.longitude=longitude;
 
     }
+
+
 }
