@@ -23,6 +23,7 @@ import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -97,6 +98,27 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             mMap.setMyLocationEnabled(true);
         }
         m=mMap.addMarker(options);
+        DatabaseReference stops=ref.child("bus").child(buspass).child("paragens");
+        stops.addListenerForSingleValueEvent(new ValueEventListener() {
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                for(int i=1;i<4;i++){
+                    String paragem=String.valueOf(i);
+                    Coordenadas location=dataSnapshot.child(paragem).child("coordenadas").getValue(Coordenadas.class);
+                    LatLng stop = new LatLng(location.latitude, location.longitude);
+                    MarkerOptions stopOption = new MarkerOptions()
+                            .position(stop)
+                            .title("STOP"+String.valueOf(i))
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                    mMap.addMarker(stopOption);
+                }
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
         Log.i("autocarro nº",buspass);
         DatabaseReference busses=ref.child("bus").child(buspass).child("coordenadas");
         busses.addValueEventListener(new ValueEventListener() {
