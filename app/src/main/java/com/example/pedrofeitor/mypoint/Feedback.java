@@ -12,6 +12,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.Toast;
@@ -64,6 +65,9 @@ public class Feedback extends FragmentActivity implements OnMapReadyCallback,
 
         Firebase.setAndroidContext(this);
         fullbuttom = (Button) findViewById(R.id.full);
+        Log.i("Feedback","onCreate");
+        Log.i("Feedback",mFirebaseAuth.getCurrentUser().getUid().toString());
+
     }
 
     public void onclickfull(View view) {
@@ -75,6 +79,8 @@ public class Feedback extends FragmentActivity implements OnMapReadyCallback,
     }
     @Override
     public void onMapReady(GoogleMap googleMap) {
+        Log.i("Feedback","onMapReady");
+
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
 
@@ -106,6 +112,7 @@ public class Feedback extends FragmentActivity implements OnMapReadyCallback,
 
     @Override
     public void onConnected(Bundle bundle) {
+        Log.i("Feedback","onConnected");
 
         mLocationRequest = new LocationRequest();
         mLocationRequest.setInterval(1000);
@@ -126,6 +133,7 @@ public class Feedback extends FragmentActivity implements OnMapReadyCallback,
 
     @Override
     public void onLocationChanged(Location location) {
+        Log.i("Feedback","onLocationChanged");
         UserRV user = new UserRV();
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
@@ -135,7 +143,6 @@ public class Feedback extends FragmentActivity implements OnMapReadyCallback,
         //Place current location marker
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
         ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("coordenadas").setValue(new Coordenadas(location.getLatitude(),location.getLongitude()));
-
         //move map camera
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
