@@ -123,6 +123,7 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
         } else{
             intent.putExtra("busnumber", bus);
             intent.putExtra("state","passanger");
+            ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("bus").setValue(bus);
             startActivity(intent);
         }
     }

@@ -206,6 +206,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
+
+        mLastLocation = location;
+        if (mCurrLocationMarker != null) {
+            mCurrLocationMarker.remove();
+        }
+        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("coordenadas").setValue(new Coordenadas(location.getLatitude(),location.getLongitude()));
+
+
+        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+
+        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
+
+        if (mGoogleApiClient != null) {
+            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
+        }
     }
 
 
