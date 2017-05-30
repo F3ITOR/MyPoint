@@ -17,4 +17,5 @@
     <string name="action_logout">Logout</string>
     <string name="title_activity_maps">Map</string>
     <string name="google_maps_key">AIzaSyDkciid-r4SnCBdrRhFRRXhjruqT2tsyiA</string>
+    <string name="title_activity_maps_passanger">Map</string>
 </resources>

@@ -11,6 +11,7 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.Toast;
 
 import com.firebase.client.Firebase;
@@ -56,6 +57,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private MarkerOptions options;
     private Marker m;
     String buspass;
+    public Button see;
+    public Button feed;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,6 +73,20 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Bundle busnumber = getIntent().getExtras();
         buspass = busnumber.getString("busnumber");
 
+        Bundle s =getIntent().getExtras();
+        String state = s.getString("state");
+
+        see = (Button) findViewById(R.id.see);
+        feed = (Button) findViewById(R.id.feed);
+        Log.i("state", state);
+        if (state.equals("future")){
+            Log.i("ciclo","see");
+            see.setVisibility(View.VISIBLE);
+        }
+        else{
+            Log.i("ciclo","feed");
+            feed.setVisibility(View.VISIBLE);
+        }
         //Name.setText(userpass);
         SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
                 .findFragmentById(R.id.map);
@@ -283,8 +301,11 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         return dist; // output distance, in MILES
     }
 
-    public void onclick(View view){
-        //Intent i = new Intent(this,Apps.class);
-        //startActivity(i);
+    public void onclickfeed(View view){
+        Intent i = new Intent(this,Feedback.class);
+        i.putExtra("busnumber", buspass);
+        startActivity(i);
     }
+
+    //public  void onclicksee(View view){    }
 }

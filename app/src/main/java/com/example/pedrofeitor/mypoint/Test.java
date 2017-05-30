@@ -105,11 +105,12 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
             dialog.show();
         } else{
             i.putExtra("busnumber", busnumberinput);
+            i.putExtra("state", "future");
             startActivity(i);
         }
     }
     public void confirm(View view){
-        Intent intent = new Intent(Test.this, Feedback.class);
+        Intent intent = new Intent(Test.this, MapsActivity.class);
         String bus = busText.getText().toString();
 
         if (bus.isEmpty()) {
@@ -120,8 +121,8 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
             AlertDialog dialog = builder.create();
             dialog.show();
         } else{
-
             intent.putExtra("busnumber", bus);
+            intent.putExtra("state","passanger");
             startActivity(intent);
         }
     }
