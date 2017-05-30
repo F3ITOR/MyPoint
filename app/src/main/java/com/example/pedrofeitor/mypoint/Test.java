@@ -96,12 +96,20 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
 
         String busnumberinput = busnumber.getQuery().toString();
 
-        i.putExtra("busnumber", busnumberinput);
-        Log.i("Bus number", busnumberinput);
-        startActivity(i);
+        if (busnumberinput.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(Test.this);
+            builder.setMessage(R.string.bus_error_message)
+                    .setTitle(R.string.login_error_title)
+                    .setPositiveButton(android.R.string.ok, null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else{
+            i.putExtra("busnumber", busnumberinput);
+            startActivity(i);
+        }
     }
     public void confirm(View view){
-
+        Intent intent = new Intent(Test.this, Feedback.class);
         String bus = busText.getText().toString();
 
         if (bus.isEmpty()) {
@@ -112,9 +120,8 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
             AlertDialog dialog = builder.create();
             dialog.show();
         } else{
-            //ref.child("users").child(mFirebaseAuth.getCurrentUser().getUid()).child("bus").setValue(bus);
 
-            Intent intent = new Intent(Test.this, MapsActivity.class);
+            intent.putExtra("busnumber", bus);
             startActivity(intent);
         }
     }

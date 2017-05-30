@@ -33,7 +33,8 @@
         </activity>
         <activity android:name=".SignUpActivity" />
         <activity android:name=".MapsActivity" />
-        <activity android:name=".Test"></activity>
+        <activity android:name=".Test" />
+        <activity android:name=".Feedback"></activity>
     </application>
 
 </manifest>
