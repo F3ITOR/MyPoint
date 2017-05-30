@@ -50,8 +50,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
     ArrayList<LatLng> paragens = new ArrayList<LatLng>();
+    ArrayList<Marker> markerParagens=new ArrayList<>();
     private FirebaseAuth mFirebaseAuth;
-    private boolean firstTime=true;
+    private boolean firstTime=false;
     private MarkerOptions options;
     private Marker m;
     String buspass;
@@ -112,8 +113,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                             .position(stop)
                             .title("STOP"+String.valueOf(i))
                             .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
-                    mMap.addMarker(stopOption);
-                    paragens.add(i,stop);
+                    Marker mp=mMap.addMarker(stopOption);
+                    paragens.add(stop);
+                    markerParagens.add(mp);
+                    Log.i("stop","passa");
                 }
             }
 
@@ -132,13 +135,18 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.i("autocarro longitude", String.valueOf(location.longitude));
                 LatLng bus = new LatLng(location.latitude, location.longitude);
                 m.setPosition(bus);
-                
-                for( int i=1;i<4;i++){
+
+                for( int i=0;i<3;i++){
+                    Log.i("distance","antes do get");
                     LatLng p = paragens.get(i);
-                    if (distance(p.latitude,p.longitude,bus.latitude,bus.longitude)< 1){
-                        Log.i("paragemAutocarro", "entrou");
+                    Log.i("distance","depois do get");
+
+                    if ((distance(p.latitude,p.longitude,bus.latitude,bus.longitude)< .250)){
+                        markerParagens.get(i).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                        Log.i("paragemAutocarro", String.valueOf(i));
                     }
                 }
+                Log.i("nmap", "entrou");
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(bus));
                 mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
             }
@@ -256,8 +264,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     public double distance(double lat1, double lng1, double lat2, double lng2) {
-
-        double earthRadius = 3958.75; // in miles, change to 6371 for kilometer output
+        Log.i("distance","inicio");
+        double earthRadius = 6371; // in miles, change to 6371 for kilometer output
 
         double dLat = Math.toRadians(lat2-lat1);
         double dLng = Math.toRadians(lng2-lng1);
@@ -271,7 +279,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         double c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
 
         double dist = earthRadius * c;
-
+        Log.i("distance",String.valueOf(dist));
         return dist; // output distance, in MILES
     }
 
