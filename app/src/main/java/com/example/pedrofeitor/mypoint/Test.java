@@ -56,6 +56,9 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
     private Location mLocation;
     private LocationManager mLocationManager;
     private LocationRequest mLocationRequest;
+    LatLng UserCoord;
+    double distance;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -114,44 +117,6 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
         buttom.setVisibility(View.VISIBLE);
     }
 
-    public void search(View view){
-        Intent i = new Intent(this,MapsActivity.class);
-
-        final SearchView busnumber = (SearchView) findViewById(R.id.search);
-
-        String busnumberinput = busnumber.getQuery().toString();
-
-        if (busnumberinput.isEmpty()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(Test.this);
-            builder.setMessage(R.string.bus_error_message)
-                    .setTitle(R.string.login_error_title)
-                    .setPositiveButton(android.R.string.ok, null);
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        } else{
-            i.putExtra("busnumber", busnumberinput);
-            i.putExtra("state", "future");
-            startActivity(i);
-        }
-    }
-    public void confirm(View view){
-        Intent intent = new Intent(Test.this, MapsActivity.class);
-        String bus = busText.getText().toString();
-        
-        if (bus.isEmpty()) {
-            AlertDialog.Builder builder = new AlertDialog.Builder(Test.this);
-            builder.setMessage(R.string.bus_error_message)
-                    .setTitle(R.string.login_error_title)
-                    .setPositiveButton(android.R.string.ok, null);
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        } else{
-            intent.putExtra("busnumber", bus);
-            intent.putExtra("state","passanger");
-            ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("bus").setValue(bus);
-            startActivity(intent);
-        }
-    }
     @Override
     public void onConnected(Bundle bundle) {
         mLocationRequest = new LocationRequest();
@@ -196,10 +161,80 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
     @Override
     public void onLocationChanged(Location location) {
         Log.i("latitude","onLoctionChanged");
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        UserCoord = new LatLng(location.getLatitude(), location.getLongitude());
         Log.i("latitude",String.valueOf(location.getLatitude()));
         Log.i("longitude",String.valueOf(location.getLongitude()));
     }
 
+    public void search(View view){
+        Intent i = new Intent(this,MapsActivity.class);
+
+        final SearchView busnumber = (SearchView) findViewById(R.id.search);
+
+        String busnumberinput = busnumber.getQuery().toString();
+
+        if (busnumberinput.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(Test.this);
+            builder.setMessage(R.string.bus_error_message)
+                    .setTitle(R.string.login_error_title)
+                    .setPositiveButton(android.R.string.ok, null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else{
+            i.putExtra("busnumber", busnumberinput);
+            i.putExtra("state", "future");
+            startActivity(i);
+        }
+    }
+
+    public void confirm(View view){
+        Intent intent = new Intent(Test.this, MapsActivity.class);
+        String bus = busText.getText().toString();
+
+
+        DatabaseReference busses=ref.child("bus").child(bus).child("coordenadas");
+        busses.addValueEventListener(new ValueEventListener(){
+
+            @Override
+            public void onDataChange(DataSnapshot dataSnapshot) {
+                Coordenadas location=dataSnapshot.getValue(Coordenadas.class);
+                Log.i("autocarro latitude", String.valueOf(location.latitude));
+                Log.i("autocarro longitude", String.valueOf(location.longitude));
+
+                Log.i("autocarro userlatitude", String.valueOf(UserCoord.latitude));
+                Log.i("autocarro userlongitude", String.valueOf(UserCoord.longitude));
+
+                distance = d.distance(location.latitude,location.longitude,UserCoord.latitude,UserCoord.longitude);
+                Log.i("autocarro distance", String.valueOf(distance));
+            }
+
+            @Override
+            public void onCancelled(DatabaseError databaseError) {
+
+            }
+        });
+
+        if (bus.isEmpty()) {
+            AlertDialog.Builder builder = new AlertDialog.Builder(Test.this);
+            builder.setMessage(R.string.bus_error_message)
+                  .setTitle(R.string.login_error_title)
+                  .setPositiveButton(android.R.string.ok, null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else if (distance > 0.01 ){
+            Log.i("autocarro distance", "passa distance");
+            AlertDialog.Builder builder = new AlertDialog.Builder(Test.this);
+            builder.setMessage(R.string.bus_distance)
+                    .setTitle(R.string.login_error_title)
+                    .setPositiveButton(android.R.string.ok, null);
+            AlertDialog dialog = builder.create();
+            dialog.show();
+        } else{
+            intent.putExtra("busnumber", bus);
+            intent.putExtra("state","passanger");
+            ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("bus").setValue(bus);
+            startActivity(intent);
+        }
+    }
 
 }
