@@ -37,7 +37,7 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
     private FirebaseAuth mFirebaseAuth;
-
+    Distance d;
     protected EditText busText ;
     protected Button checkButtom;
     @Override
@@ -46,7 +46,7 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
         setContentView(R.layout.activity_test);
         mFirebaseAuth = FirebaseAuth.getInstance();
         // Generate sample data
-
+        d = new Distance();
         busnumberList = new String[]{"112", "113"};
         busText = (EditText) findViewById(R.id.busnumber);
         checkButtom = (Button) findViewById(R.id.loginButton);
@@ -112,7 +112,7 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
     public void confirm(View view){
         Intent intent = new Intent(Test.this, MapsActivity.class);
         String bus = busText.getText().toString();
-
+        
         if (bus.isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(Test.this);
             builder.setMessage(R.string.bus_error_message)
