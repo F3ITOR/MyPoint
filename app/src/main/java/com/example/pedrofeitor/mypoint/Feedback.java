@@ -52,7 +52,6 @@ public class Feedback extends AppCompatActivity{
         setContentView(R.layout.activity_feedback);
 
 
-        intent = new Intent(Feedback.this, MapsActivity.class);
         Bundle busnumber = getIntent().getExtras();
         buspass = busnumber.getString("busnumber");
 
@@ -61,18 +60,16 @@ public class Feedback extends AppCompatActivity{
         Firebase.setAndroidContext(this);
         fullbuttom = (Button) findViewById(R.id.full);
         Log.i("Feedback","onCreate");
-        Log.i("Feedback",mFirebaseAuth.getCurrentUser().getUid().toString());
-
     }
 
     public void onclickfull(View view) {
         ref.child("bus").child(buspass).child("passageiros").child(mFirebaseAuth.getCurrentUser().getUid().toString()).child("feedback").child("full").setValue(1);
-        startActivity(intent);
+        finish();
     }
 
     public void onclickclean(View view) {
         ref.child("bus").child(buspass).child("passageiros").child(mFirebaseAuth.getCurrentUser().getUid().toString()).child("feedback").child("clean").setValue(1);
-        startActivity(intent);
+        finish();
     }
 
 }

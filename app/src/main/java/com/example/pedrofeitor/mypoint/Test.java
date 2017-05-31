@@ -58,7 +58,8 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
     private LocationRequest mLocationRequest;
     LatLng UserCoord;
     double distance;
-
+    String bus;
+    Boolean check=false;
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -162,8 +163,8 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
     public void onLocationChanged(Location location) {
         Log.i("latitude","onLoctionChanged");
         UserCoord = new LatLng(location.getLatitude(), location.getLongitude());
-        Log.i("latitude",String.valueOf(location.getLatitude()));
-        Log.i("longitude",String.valueOf(location.getLongitude()));
+        Log.i("coordendas latitude",String.valueOf(location.getLatitude()));
+        Log.i("coordendas longitude",String.valueOf(location.getLongitude()));
     }
 
     public void search(View view){
@@ -191,9 +192,8 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
         Intent intent = new Intent(Test.this, MapsActivity.class);
         String bus = busText.getText().toString();
 
-
         DatabaseReference busses=ref.child("bus").child(bus).child("coordenadas");
-        busses.addValueEventListener(new ValueEventListener(){
+        ValueEventListener bv= busses.addValueEventListener(new ValueEventListener(){
 
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
@@ -213,28 +213,19 @@ public class Test extends AppCompatActivity implements SearchView.OnQueryTextLis
 
             }
         });
-
         if (bus.isEmpty()) {
             AlertDialog.Builder builder = new AlertDialog.Builder(Test.this);
             builder.setMessage(R.string.bus_error_message)
-                  .setTitle(R.string.login_error_title)
-                  .setPositiveButton(android.R.string.ok, null);
-            AlertDialog dialog = builder.create();
-            dialog.show();
-        } else if (distance > 0.01 ){
-            Log.i("autocarro distance", "passa distance");
-            AlertDialog.Builder builder = new AlertDialog.Builder(Test.this);
-            builder.setMessage(R.string.bus_distance)
                     .setTitle(R.string.login_error_title)
                     .setPositiveButton(android.R.string.ok, null);
             AlertDialog dialog = builder.create();
             dialog.show();
         } else{
+            busses.removeEventListener(bv);
             intent.putExtra("busnumber", bus);
             intent.putExtra("state","passanger");
-            ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("bus").setValue(bus);
+            ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("bus").setValue(Integer.parseInt(bus));
             startActivity(intent);
         }
     }
-
 }

@@ -50,53 +50,62 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     LocationRequest mLocationRequest;
     final FirebaseDatabase database = FirebaseDatabase.getInstance();
     DatabaseReference ref = database.getReference();
+    DatabaseReference busses;
     ArrayList<LatLng> paragens = new ArrayList<LatLng>();
     ArrayList<Marker> markerParagens=new ArrayList<>();
     private FirebaseAuth mFirebaseAuth;
-    private boolean firstTime=false;
     private MarkerOptions options;
     private Marker m;
     String buspass;
     public Button see;
     public Button feed;
     Distance d ;
-
+    public ValueEventListener b;
+    String state;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        Log.i("passa","onCreate");
         setContentView(R.layout.activity_maps);
         mFirebaseAuth = FirebaseAuth.getInstance();
         if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            checkLocationPermission();
-        }
-        d = new Distance();
-        Bundle busnumber = getIntent().getExtras();
-        buspass = busnumber.getString("busnumber");
+                checkLocationPermission();
+            }
+            d = new Distance();
+            Bundle busnumber = getIntent().getExtras();
+            buspass = busnumber.getString("busnumber");
 
-        Bundle s =getIntent().getExtras();
-        String state = s.getString("state");
-
-        see = (Button) findViewById(R.id.see);
-        feed = (Button) findViewById(R.id.feed);
-        Log.i("state", state);
-        if (state.equals("future")){
-            Log.i("ciclo","see");
-            see.setVisibility(View.VISIBLE);
-        }
-        else{
-            Log.i("ciclo","feed");
-            feed.setVisibility(View.VISIBLE);
-        }
-        //Name.setText(userpass);
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
-                .findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
-        Firebase.setAndroidContext(this);
-        options = new MarkerOptions().position(new LatLng(38.751239,-9.60948)).title("BUS "+buspass);
-
+            Bundle s =getIntent().getExtras();
+            state = s.getString("state");
+            see = (Button) findViewById(R.id.see);
+            feed = (Button) findViewById(R.id.feed);
+            Log.i("state", state);
+            if (state.equals("future")){
+                Log.i("ciclo","see");
+                see.setVisibility(View.VISIBLE);
+            }
+            else{
+                Log.i("ciclo","feed");
+                feed.setVisibility(View.VISIBLE);
+            }
+            //Name.setText(userpass);
+            SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager()
+                    .findFragmentById(R.id.map);
+            mapFragment.getMapAsync(this);
+            Firebase.setAndroidContext(this);
+            options = new MarkerOptions().position(new LatLng(38.751239,-9.60948)).title("BUS "+buspass);
     }
-
-
+    @Override
+    protected void onResume() {
+        super.onResume();
+        Log.i("passa","onResume");
+    }
+    @Override
+    protected void onStop() {
+        super.onStop();
+        Log.i("passa","onStop");
+        busses.removeEventListener(b);
+    }
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -144,8 +153,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         });
         Log.i("autocarro nº",buspass);
-        DatabaseReference busses=ref.child("bus").child(buspass).child("coordenadas");
-        busses.addValueEventListener(new ValueEventListener() {
+        busses=ref.child("bus").child(buspass).child("coordenadas");
+        b=busses.addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(DataSnapshot dataSnapshot) {
                 Coordenadas location=dataSnapshot.getValue(Coordenadas.class);
@@ -153,9 +162,9 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 Log.i("autocarro longitude", String.valueOf(location.longitude));
                 LatLng bus = new LatLng(location.latitude, location.longitude);
                 m.setPosition(bus);
-
+                Log.i("autocarro nparagens",String.valueOf(paragens.size()));
                 for( int i=0;i<3;i++){
-                    Log.i("distance","antes do get");
+                    Log.i("distance","antes do get"+String.valueOf(i));
                     LatLng p = paragens.get(i);
                     Log.i("distance","depois do get");
 
@@ -206,22 +215,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     @Override
     public void onLocationChanged(Location location) {
-
+        Log.i("onLocationChanged","passa");
         mLastLocation = location;
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
         LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
-        ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("coordenadas").setValue(new Coordenadas(location.getLatitude(),location.getLongitude()));
+        Log.i("onLocationChanged lat",String.valueOf(location.getLatitude()));
+        Log.i("onLocationChanged long",String.valueOf(location.getLongitude()));
 
+        if(state.equals("passanger")) {
+            Log.i("onLocationChanged", "passanger");
+            ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("coordenadas").setValue(new Coordenadas(location.getLatitude(), location.getLongitude()));
+        }
 
         mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
 
         mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
-
-        if (mGoogleApiClient != null) {
-            LocationServices.FusedLocationApi.removeLocationUpdates(mGoogleApiClient, this);
-        }
     }
 
 
