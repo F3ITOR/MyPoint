@@ -130,7 +130,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     MarkerOptions stopOption = new MarkerOptions()
                             .position(stop)
                             .title("STOP"+String.valueOf(i))
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_AZURE));
+                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
                     Marker mp=mMap.addMarker(stopOption);
                     paragens.add(stop);
                     markerParagens.add(mp);
@@ -159,8 +159,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     LatLng p = paragens.get(i);
                     Log.i("distance","depois do get");
 
-                    if ((d.distance(p.latitude,p.longitude,bus.latitude,bus.longitude)< .250)){
-                        markerParagens.get(i).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
+                    if (d.distance(p.latitude,p.longitude,bus.latitude,bus.longitude)< .01){
+                        markerParagens.get(i).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                         Log.i("paragemAutocarro", String.valueOf(i));
                     }
                 }
