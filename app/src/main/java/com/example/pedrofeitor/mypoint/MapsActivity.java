@@ -62,6 +62,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     Distance d ;
     public ValueEventListener b;
     String state;
+    double dist;
+    LatLng latLng;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -178,11 +180,15 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Log.i("distance","antes do get"+String.valueOf(i));
                     LatLng p = paragens.get(i);
                     Log.i("distance","depois do get");
-
-                    if (d.distance(p.latitude,p.longitude,bus.latitude,bus.longitude)< .01){
+                    dist = d.distance(p.latitude,p.longitude,bus.latitude,bus.longitude);
+                    if (dist< .01) {
                         markerParagens.get(i).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                         ref.child("bus").child(buspass).child("paragens").child(String.valueOf(i+1)).child("passou").setValue(true);
                         Log.i("paragemAutocarro", String.valueOf(i));
+                    }else{
+                        if (d.distance(latLng.latitude,latLng.longitude,p.latitude,p.longitude)<0.07 && state.equals("passanger")){
+                            Log.i("check out", "done");
+                        }
                     }
                 }
                 Log.i("nmap", "entrou");
@@ -232,7 +238,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         if (mCurrLocationMarker != null) {
             mCurrLocationMarker.remove();
         }
-        LatLng latLng = new LatLng(location.getLatitude(), location.getLongitude());
+        latLng = new LatLng(location.getLatitude(), location.getLongitude());
         Log.i("onLocationChanged lat",String.valueOf(location.getLatitude()));
         Log.i("onLocationChanged long",String.valueOf(location.getLongitude()));
 
