@@ -135,11 +135,22 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 for(int i=1;i<4;i++){
                     String paragem=String.valueOf(i);
                     Coordenadas location=dataSnapshot.child(paragem).child("coordenadas").getValue(Coordenadas.class);
+                    Boolean passou=(Boolean) dataSnapshot.child(paragem).child("passou").getValue();
+                    Log.i("Paragem",String.valueOf(passou));
                     LatLng stop = new LatLng(location.latitude, location.longitude);
-                    MarkerOptions stopOption = new MarkerOptions()
-                            .position(stop)
-                            .title("STOP"+String.valueOf(i))
-                            .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    MarkerOptions stopOption;
+                    if(passou){
+                        stopOption = new MarkerOptions()
+                                .position(stop)
+                                .title("STOP"+String.valueOf(i))
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                    }
+                    else{
+                        stopOption = new MarkerOptions()
+                                .position(stop)
+                                .title("STOP"+String.valueOf(i))
+                                .icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_GREEN));
+                    }
                     Marker mp=mMap.addMarker(stopOption);
                     paragens.add(stop);
                     markerParagens.add(mp);
@@ -170,6 +181,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                     if (d.distance(p.latitude,p.longitude,bus.latitude,bus.longitude)< .01){
                         markerParagens.get(i).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
+                        ref.child("bus").child(buspass).child("paragens").child(String.valueOf(i+1)).child("passou").setValue(true);
                         Log.i("paragemAutocarro", String.valueOf(i));
                     }
                 }

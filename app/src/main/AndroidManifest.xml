@@ -35,6 +35,7 @@
         <activity android:name=".MapsActivity" />
         <activity android:name=".Test" />
         <activity android:name=".Feedback"></activity>
+        <activity android:name=".ShowFeedback"></activity>
     </application>
 
 </manifest>
