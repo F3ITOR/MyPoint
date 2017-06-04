@@ -34,8 +34,7 @@
         <activity android:name=".SignUpActivity" />
         <activity android:name=".MapsActivity" />
         <activity android:name=".Test" />
-        <activity android:name=".Feedback"></activity>
-        <activity android:name=".ShowFeedback"></activity>
+        <activity android:name=".Feedback"/>
     </application>
 
 </manifest>

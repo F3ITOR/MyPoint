@@ -35,6 +35,7 @@ import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.ValueEventListener;
+import static com.example.pedrofeitor.mypoint.Test.MY_PERMISSIONS_REQUEST_LOCATION;
 
 import java.util.ArrayList;
 
@@ -70,9 +71,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         Log.i("passa","onCreate");
         setContentView(R.layout.activity_maps);
         mFirebaseAuth = FirebaseAuth.getInstance();
-        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                checkLocationPermission();
-            }
             d = new Distance();
             Bundle busnumber = getIntent().getExtras();
             buspass = busnumber.getString("busnumber");
@@ -95,7 +93,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     .findFragmentById(R.id.map);
             mapFragment.getMapAsync(this);
             Firebase.setAndroidContext(this);
-            options = new MarkerOptions().position(new LatLng(38.751239,-9.60948)).title("BUS "+buspass);
+            options = new MarkerOptions().position(new LatLng(38.751239,-9.60948)).title("BUS "+buspass).icon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_YELLOW));
     }
     @Override
     protected void onResume() {
@@ -110,6 +108,12 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        Log.i("passa","onDestroy");
+        busses.removeEventListener(b);
+    }
+    @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
         mMap.setMapType(GoogleMap.MAP_TYPE_HYBRID);
@@ -122,12 +126,23 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                     Manifest.permission.ACCESS_FINE_LOCATION)
                     == PackageManager.PERMISSION_GRANTED) {
                 buildGoogleApiClient();
-                mMap.setMyLocationEnabled(true);
+                if(state.equals("passanger")){
+                    mMap.setMyLocationEnabled(false);
+                }
+                else{
+                    mMap.setMyLocationEnabled(true);
+                }
             }
         }
         else {
             buildGoogleApiClient();
-            mMap.setMyLocationEnabled(true);
+            if(state.equals("passanger")){
+                mMap.setMyLocationEnabled(false);
+            }
+            else{
+                mMap.setMyLocationEnabled(true);
+            }
+
         }
         m=mMap.addMarker(options);
         DatabaseReference stops=ref.child("bus").child(buspass).child("paragens");
@@ -185,11 +200,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         markerParagens.get(i).setIcon(BitmapDescriptorFactory.defaultMarker(BitmapDescriptorFactory.HUE_RED));
                         ref.child("bus").child(buspass).child("paragens").child(String.valueOf(i+1)).child("passou").setValue(true);
                         Log.i("paragemAutocarro", String.valueOf(i));
-                    }else{
+                    }/*else{
                         if (d.distance(latLng.latitude,latLng.longitude,p.latitude,p.longitude)<0.07 && state.equals("passanger")){
+                            ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("bus").setValue(null);
                             Log.i("check out", "done");
+                            finish();
                         }
-                    }
+                    }*/
                 }
                 Log.i("nmap", "entrou");
                 mMap.moveCamera(CameraUpdateFactory.newLatLng(bus));
@@ -246,10 +263,6 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             Log.i("onLocationChanged", "passanger");
             ref.child("users/").child(mFirebaseAuth.getCurrentUser().getUid()).child("coordenadas").setValue(new Coordenadas(location.getLatitude(), location.getLongitude()));
         }
-
-        mMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-
-        mMap.animateCamera(CameraUpdateFactory.zoomTo(18));
     }
 
 
@@ -259,81 +272,19 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
     }
 
-    public static final int MY_PERMISSIONS_REQUEST_LOCATION = 99;
-    public boolean checkLocationPermission(){
-        if (ContextCompat.checkSelfPermission(this,
-                Manifest.permission.ACCESS_FINE_LOCATION)
-                != PackageManager.PERMISSION_GRANTED) {
 
-            // Asking user if explanation is needed
-            if (ActivityCompat.shouldShowRequestPermissionRationale(this,
-                    Manifest.permission.ACCESS_FINE_LOCATION)) {
-
-                // Show an explanation to the user *asynchronously* -- don't block
-                // this thread waiting for the user's response! After the user
-                // sees the explanation, try again to request the permission.
-
-                //Prompt the user once explanation has been shown
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-
-
-            } else {
-                // No explanation needed, we can request the permission.
-                ActivityCompat.requestPermissions(this,
-                        new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
-                        MY_PERMISSIONS_REQUEST_LOCATION);
-            }
-            return false;
-        } else {
-            return true;
-        }
-    }
-
-    @Override
-    public void onRequestPermissionsResult(int requestCode,
-                                           String permissions[], int[] grantResults) {
-        switch (requestCode) {
-            case MY_PERMISSIONS_REQUEST_LOCATION: {
-                // If request is cancelled, the result arrays are empty.
-                if (grantResults.length > 0
-                        && grantResults[0] == PackageManager.PERMISSION_GRANTED) {
-
-                    // permission was granted. Do the
-                    // contacts-related task you need to do.
-                    if (ContextCompat.checkSelfPermission(this,
-                            Manifest.permission.ACCESS_FINE_LOCATION)
-                            == PackageManager.PERMISSION_GRANTED) {
-
-                        if (mGoogleApiClient == null) {
-                            buildGoogleApiClient();
-                        }
-                        mMap.setMyLocationEnabled(true);
-                    }
-
-                } else {
-
-                    // Permission denied, Disable the functionality that depends on this permission.
-                    Toast.makeText(this, "permission denied", Toast.LENGTH_LONG).show();
-                }
-                return;
-            }
-
-            // other 'case' lines to check for other permissions this app might request.
-            // You can add here other case statements according to your requirement.
-        }
-    }
 
     public void onclickfeed(View view){
         Intent i = new Intent(this,Feedback.class);
         i.putExtra("busnumber", buspass);
+        i.putExtra("state",state);
         startActivity(i);
     }
 
     public  void onclicksee(View view){
-        Intent i = new Intent(this,ShowFeedback.class);
+        Intent i = new Intent(this,Feedback.class);
         i.putExtra("busnumber", buspass);
+        i.putExtra("state",state);
         startActivity(i);
     }
 }
